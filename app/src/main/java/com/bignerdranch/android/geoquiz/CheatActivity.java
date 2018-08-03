@@ -14,7 +14,11 @@ public class CheatActivity extends AppCompatActivity {
             ".answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz" +
             ".answer_shown";
+
+    private static final String KEY_IS_ANSWER_SHOWN = "isAnswerShown";
+
     private boolean mAnswerIsTrue;
+    private boolean mIsAnswerShown = false;
 
     private Button mShowButton;
     private TextView mAnswerTextView;
@@ -37,10 +41,25 @@ public class CheatActivity extends AppCompatActivity {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
 
+    // Add isAnswerShown to the saved data when activity is destroyed
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(KEY_IS_ANSWER_SHOWN, mIsAnswerShown);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
+
+        // Restore data from the destroyed activity
+        if(savedInstanceState != null) {
+            mIsAnswerShown = savedInstanceState.getBoolean(KEY_IS_ANSWER_SHOWN);
+            if(mIsAnswerShown) {
+                setAnswerShownResult(true);
+            }
+        }
 
         // Retrive the data from the extra
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
@@ -58,6 +77,7 @@ public class CheatActivity extends AppCompatActivity {
                 } else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
+                mIsAnswerShown = true;
                 setAnswerShownResult(true);
             }
         });
